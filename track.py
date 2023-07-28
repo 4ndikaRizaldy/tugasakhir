@@ -5,6 +5,7 @@ os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import sys
 sys.path.insert(0, './yolov5')
@@ -39,15 +40,13 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-# count_car, count_bus, count_truck = 0, 0, 0
-data_car = []
-data_bus = []
-data_truck = []
-data_motor = []
+# count_tetesan, count_bus, count_truck = 0, 0, 0
+
+data_tetesan = []
 already = []
 line_pos = 0.6
 
-def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
+def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
     out, source, yolo_model, deep_sort_model, show_vid, save_vid, save_txt, imgsz, evaluate, half, project, name, exist_ok= \
         opt.output, opt.source, opt.yolo_model, opt.deep_sort_model, opt.show_vid, opt.save_vid, \
         opt.save_txt, opt.imgsz, opt.evaluate, opt.half, opt.project, opt.name, opt.exist_ok
@@ -111,6 +110,8 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
         bs = 1  # batch_size
     vid_path, vid_writer = [None] * bs, [None] * bs
 
+    t0 = time.time()
+    
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
 
@@ -188,7 +189,7 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
                         c = int(cls)  # integer class
                         label = f'{id} {names[c]} {conf:.2f}'
                         annotator.box_label(bboxes, label, color=colors(c, True))
-                        # count_obj(bboxes,w,h,id, names[c], data_car, data_bus, data_truck, data_motor)
+                        # count_obj(bboxes,w,h,id, names[c], data_tetesan, data_bus, data_truck, data_motor)
                         count_obj(bboxes,w,h,id, names[c], line_pos)
                         
                         if save_txt:
@@ -213,10 +214,7 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
             if show_vid:
                 # count vehicle
                 color = (0,255,0)
-                color_car = (0,150,255)
-                color_bus = (0,255,0)
-                color_truck = (255,0,0)
-                color_motor = (255,255,0)
+                color_tetesan = (0,150,255)
                 start_point = (0, int(line_pos*h))
                 end_point = (w, int(line_pos*h))
                 cv2.line(im0, start_point, end_point, color, thickness=2)
@@ -225,10 +223,6 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
                 distance_height = 100
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 fontScale = 2
-                # cv2.putText(im0, 'car: ' + str(len(data_car)), org, font, fontScale, color_car, thickness, cv2.LINE_AA)
-                # cv2.putText(im0, 'bus: ' + str(len(data_bus)), (org[0], org[1] + distance_height), font, fontScale, color_bus, thickness, cv2.LINE_AA)
-                # cv2.putText(im0, 'truck: ' + str(len(data_truck)), (org[0], org[1] + distance_height*2), font, fontScale, color_truck, thickness, cv2.LINE_AA)
-                # cv2.putText(im0, 'motor: ' + str(len(data_motor)), (org[0], org[1] + distance_height*3), font, fontScale, color_motor, thickness, cv2.LINE_AA)
 
                 cv2.imshow(str(p), im0)
                 if cv2.waitKey(1) == ord('q'):  # q to quit
@@ -251,6 +245,12 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
 
                 vid_writer.write(im0)
 
+                # Waktu selesai deteksi objek
+                t4 = time.time()
+                
+                # Menghitung waktu deteksi objek
+                detection_time = t4 - t0
+                
                 # show fps
                 curr_time = time.time()
                 fps_ = curr_time - prev_time
@@ -259,10 +259,8 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
                 sum_fps += fps_
 
                 stframe.image(im0, channels="BGR", use_column_width=True)
-                car.markdown(f"<h3> {str(len(data_car))} </h3>", unsafe_allow_html=True)
-                bus.write(f"<h3> {str(len(data_bus))} </h3>", unsafe_allow_html=True)
-                truck.write(f"<h3> {str(len(data_truck))} </h3>", unsafe_allow_html=True)
-                motor.write(f"<h3> {str(len(data_motor))} </h3>", unsafe_allow_html=True)
+                tetesan.markdown(f"<h3> {str(len(data_tetesan))} </h3>", unsafe_allow_html=True)
+                timer.write(f"<h3> {detection_time:.2f} </h3>", unsafe_allow_html=True)
                 fps_rate.markdown(f"<h3> {fps_} </h3>", unsafe_allow_html=True)
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
@@ -277,33 +275,24 @@ def detect(opt, stframe, car, bus, truck, motor, line, fps_rate, class_id):
             
 
 def count_obj(box, w, h, id, label, line_pos):
-    global data_car, data_bus, data_truck, data_motor, already
+    global data_tetesan, already
     center_coordinates = (int(box[0]+(box[2]-box[0])/2) , int(box[1]+(box[3]-box[1])/2))
     # classify one time per id
     if center_coordinates[1] > (h*line_pos):
         if id not in already:
             already.append(id)
-            if label == 'car' and id not in data_car:
-                data_car.append(id)
-            elif label == 'bus' and id not in data_bus:
-                data_bus.append(id)
-            elif label == 'truck' and id not in data_truck:
-                data_truck.append(id)
-            elif label == 'motorcycle' and id not in data_motor:
-                data_motor.append(id)
+            if label == 'tetesan' and id not in data_tetesan:
+                data_tetesan.append(id)
 
 # reset id in data
 def reset():
-    global data_car, data_bus, data_truck, data_motor, already
-    data_car = []
-    data_bus = []
-    data_truck = []
-    data_motor = []
+    global data_tetesan, already
+    data_tetesan = []
     already = []
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--yolo_model', nargs='+', type=str, default='best_new.pt', help='model.pt path(s)')
+    parser.add_argument('--yolo_model', nargs='+', type=str, default='bestdripinfusion.pt', help='model.pt path(s)')
     parser.add_argument('--deep_sort_model', type=str, default='osnet_x0_25')
     parser.add_argument('--source', type=str, default='videos/motor.mp4', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
@@ -315,7 +304,7 @@ def parse_opt():
     parser.add_argument('--show-vid', action='store_false', help='display tracking video results')
     parser.add_argument('--save-vid', action='store_true', help='save video tracking results')
     parser.add_argument('--save-txt', action='store_true', help='save MOT compliant results to *.txt')
-    # class 0 is person, 1 is bycicle, 2 is car... 79 is oven
+    # class 0 is person, 1 is bycicle, 2 is tetesan... 79 is oven
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 16 17')
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')

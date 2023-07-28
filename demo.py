@@ -7,7 +7,7 @@ import os
 
 
 if __name__ == '__main__':
-    st.title('Vehicle detection and counting')
+    st.title('Monitoring Drip Infusion')
     st.markdown('<h3 style="color: red"> with Yolov5 and Deep SORT </h3', unsafe_allow_html=True)
 
     # upload video
@@ -24,8 +24,8 @@ if __name__ == '__main__':
     st.sidebar.title('Settings')
     # custom class
     custom_class = st.sidebar.checkbox('Custom classes')
-    assigned_class_id = [0, 1, 2, 3]
-    names = ['car', 'motorcycle', 'truck', 'bus']
+    assigned_class_id = [0]
+    names = ['tetesan']
 
     if custom_class:
         assigned_class_id = []
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # setting hyperparameter
     confidence = st.sidebar.slider('Confidence', min_value=0.0, max_value=1.0, value=0.5)
-    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.6, step=0.1)
+    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.45, step=0.1)
     st.sidebar.markdown('---')
 
     
@@ -48,24 +48,15 @@ if __name__ == '__main__':
     else:
         status.markdown('<font size= "4"> **Status:** Ready </font>', unsafe_allow_html=True)
 
-    car, bus, truck, motor = st.columns(4)
-    with car:
-        st.markdown('**Car**')
-        car_text = st.markdown('__')
+    tetesan, timer, fps = st.columns(3)
+    with tetesan:
+        st.markdown('**Tetesan**')
+        tetesan_text = st.markdown('__')
     
-    with bus:
-        st.markdown('**Bus**')
-        bus_text = st.markdown('__')
+    with timer:
+        st.markdown('**Time**')
+        timer_text = st.markdown('__')
 
-    with truck:
-        st.markdown('**Truck**')
-        truck_text = st.markdown('__')
-    
-    with motor:
-        st.markdown('**Motorcycle**')
-        motor_text = st.markdown('__')
-
-    fps, _,  _, _  = st.columns(4)
     with fps:
         st.markdown('**FPS**')
         fps_text = st.markdown('__')
@@ -82,7 +73,7 @@ if __name__ == '__main__':
 
         status.markdown('<font size= "4"> **Status:** Running... </font>', unsafe_allow_html=True)
         with torch.no_grad():
-            detect(opt, stframe, car_text, bus_text, truck_text, motor_text, line, fps_text, assigned_class_id)
+            detect(opt, stframe, tetesan_text, timer_text, line, fps_text, assigned_class_id)
         status.markdown('<font size= "4"> **Status:** Finished ! </font>', unsafe_allow_html=True)
         # end_noti = st.markdown('<center style="color: blue"> FINISH </center>',  unsafe_allow_html=True)
 
