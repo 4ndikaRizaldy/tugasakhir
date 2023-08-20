@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # setting hyperparameter
     confidence = st.sidebar.slider('Confidence', min_value=0.0, max_value=1.0, value=0.5)
-    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.45, step=0.1)
+    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.50, step=0.1)
 
 
     
