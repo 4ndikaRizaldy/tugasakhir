@@ -40,7 +40,7 @@ if __name__ == '__main__':
     st.sidebar.title('Settings')
     # custom class
     # custom_class = st.sidebar.checkbox('Custom classes')
-    assigned_class_id = [0]
+    assigned_class_id = [1]
     names = ['tetesan']
 
     # if custom_class:
