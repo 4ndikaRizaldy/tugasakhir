@@ -218,7 +218,7 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 fontScale = 2
 
-                cv2.imshow(str(p), im0)
+                # cv2.imshow(str(p), im0)
                 if cv2.waitKey(1) == ord('q'):  # q to quit
                     raise StopIteration
 
