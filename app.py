@@ -29,13 +29,14 @@ if __name__ == '__main__':
 
     # upload video
     video_file_buffer = st.sidebar.file_uploader("Upload a video", type=['mp4', 'mov', 'avi'])
-
-    if video_file_buffer:
-        st.sidebar.text('Input video')
-        st.sidebar.video(video_file_buffer)
-        # save video from streamlit into "videos" folder for future detect
-        with open(os.path.join('videos', video_file_buffer.name), 'wb') as f:
-            f.write(video_file_buffer.getbuffer())
+    col1, col2 = st.columns(2)
+    with col1:
+        if video_file_buffer:
+            st.text('Input video')
+            st.video(video_file_buffer)
+            # save video from streamlit into "videos" folder for future detect
+            with open(os.path.join('videos', video_file_buffer.name), 'wb') as f:
+                f.write(video_file_buffer.getbuffer())
 
     st.sidebar.title('Settings')
     # custom class
@@ -53,12 +54,11 @@ if __name__ == '__main__':
 
     # setting hyperparameter
     confidence = st.sidebar.slider('Confidence', min_value=0.0, max_value=1.0, value=0.5)
-    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.50, step=0.1)
-
-
+    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.46, step=0.1)
     
     status = st.empty()
     stframe = st.empty()
+    
     if video_file_buffer is None:
         status.markdown('<font size= "4"> **Status:** Waiting for input </font>', unsafe_allow_html=True)
     else:
@@ -80,18 +80,21 @@ if __name__ == '__main__':
 
     track_button = st.sidebar.button('START')
     # reset_button = st.sidebar.button('RESET ID')
-    if track_button:
-        # reset ID and count from 0
-        reset()
-        opt = parse_opt()
-        opt.conf_thres = confidence
-        opt.source = f'videos/{video_file_buffer.name}'
+    with col2:
+        st.text('Output Video')
+        stframe = st.empty()
+        if track_button:
+            # reset ID and count from 0
+            reset()
+            opt = parse_opt()
+            opt.conf_thres = confidence
+            opt.source = f'videos/{video_file_buffer.name}'
 
-        status.markdown('<font size= "4"> **Status:** Running... </font>', unsafe_allow_html=True)
-        with torch.no_grad():
-            detect(opt, stframe, tetesan_text, timer_text, line, fps_text, assigned_class_id)
-        status.markdown('<font size= "4"> **Status:** Finished ! </font>', unsafe_allow_html=True)
-        # end_noti = st.markdown('<center style="color: blue"> FINISH </center>',  unsafe_allow_html=True)
+            status.markdown('<font size= "4"> **Status:** Running... </font>', unsafe_allow_html=True)
+            with torch.no_grad():
+                detect(opt, stframe, tetesan_text, timer_text, line, fps_text, assigned_class_id)
+            status.markdown('<font size= "4"> **Status:** Finished ! </font>', unsafe_allow_html=True)
+            # end_noti = st.markdown('<center style="color: blue"> FINISH </center>',  unsafe_allow_html=True)
 
     # if reset_button:
         # reset()
