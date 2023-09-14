@@ -239,7 +239,7 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
                         w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                     else:  # stream
-                        fps, w, h = 60, im0.shape[1], im0.shape[0]
+                        fps, w, h = 30, im0.shape[1], im0.shape[0]
 
                     vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
 

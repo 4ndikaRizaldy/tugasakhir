@@ -1,4 +1,4 @@
-# Vehicle Detection and Counting System on Streamlit
+# Monitoring Drip Infusion System on Streamlit
 
 ![Demo image](Resources/demo.jpg)
 
