@@ -41,7 +41,7 @@ if __name__ == '__main__':
     st.sidebar.title('Settings')
     # custom class
     # custom_class = st.sidebar.checkbox('Custom classes')
-    assigned_class_id = [1]
+    assigned_class_id = [2]
     names = ['tetesan']
 
     # if custom_class:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     # setting hyperparameter
     confidence = st.sidebar.slider('Confidence', min_value=0.0, max_value=1.0, value=0.5)
-    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.46, step=0.1)
+    line = st.sidebar.number_input('Line position', min_value=0.0, max_value=1.0, value=0.481, step=0.05)
     
     status = st.empty()
     stframe = st.empty()
@@ -79,11 +79,10 @@ if __name__ == '__main__':
 
 
     track_button = st.sidebar.button('START')
-    # reset_button = st.sidebar.button('RESET ID')
     with col2:
-        st.text('Output Video')
-        stframe = st.empty()
         if track_button:
+            st.text('Output Video')
+            stframe = st.empty()
             # reset ID and count from 0
             reset()
             opt = parse_opt()
@@ -94,8 +93,3 @@ if __name__ == '__main__':
             with torch.no_grad():
                 detect(opt, stframe, tetesan_text, timer_text, line, fps_text, assigned_class_id)
             status.markdown('<font size= "4"> **Status:** Finished ! </font>', unsafe_allow_html=True)
-            # end_noti = st.markdown('<center style="color: blue"> FINISH </center>',  unsafe_allow_html=True)
-
-    # if reset_button:
-        # reset()
-    #     st.markdown('<h3 style="color: blue"> Reseted ID </h3>', unsafe_allow_html=True)
