@@ -11,7 +11,7 @@ __all__ = ['DeepSort']
 
 
 class DeepSort(object):
-    def __init__(self, model_type, max_dist=0.2, max_iou_distance=0.7, max_age=70, n_init=3, nn_budget=100, use_cuda=True):
+    def __init__(self, model_type, max_dist=0.2, max_iou_distance=0.5, max_age=70, n_init=2, nn_budget=100, use_cuda=True):
 
         self.extractor = Extractor(model_type, use_cuda=use_cuda)
 

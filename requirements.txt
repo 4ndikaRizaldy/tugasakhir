@@ -80,7 +80,7 @@ six==1.16.0
 smmap==5.0.0
 soupsieve==2.3.2.post1
 stack-data==0.6.2
-streamlit==1.11.0
+streamlit==1.27.1
 tb-nightly==2.12.0a20230106
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1

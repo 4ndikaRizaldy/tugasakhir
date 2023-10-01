@@ -57,6 +57,8 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
     sum_fps = 0
     line_pos = line
     save_vid = True
+    unique_ids = set()  # Inisialisasi set untuk mengumpulkan ID yang unik
+    current_value = 0  # Inisialisasi current_value di luar loop for
     # initialize deepsort
     cfg = get_config()
     cfg.merge_from_file(opt.config_deepsort)
@@ -192,6 +194,9 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
                         # count_obj(bboxes,w,h,id, names[c], data_tetesan, data_bus, data_truck, data_motor)
                         count_obj(bboxes,w,h,id, names[c], line_pos)
                         
+                        # Menambahkan ID yang unik ke dalam set
+                        unique_ids.add(id)
+
                         if save_txt:
                             # to MOT format
                             bbox_left = output[0]
@@ -202,7 +207,7 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
                             with open(txt_path, 'a') as f:
                                 f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
-
+                                
                 LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
             else:
@@ -258,8 +263,26 @@ def detect(opt, stframe, tetesan, timer, line, fps_rate, class_id):
                 prev_time = curr_time
                 sum_fps += fps_
 
+                # Mengonversi set ke daftar dan menggabungkannya menjadi satu baris teks
+                unique_ids_str = ' '.join(map(str, unique_ids))
+                 # Periksa jika nilai baru lebih besar daripada nilai saat ini
+                if unique_ids_str:  # Memeriksa apakah string tidak kosong
+                    # Memecah string menjadi beberapa angka terpisah
+                    id_values = unique_ids_str.split()
+                    
+                    # Mengambil angka terakhir dari string
+                    if id_values:
+                        last_id = int(id_values[-1])
+                        # Periksa jika nilai baru lebih besar daripada nilai saat ini
+                        if last_id > current_value:
+                            # Perbarui nilai yang ditampilkan dengan nilai yang lebih besar yang baru
+                            tetesan.markdown(f"<h3>{last_id}</h3>", unsafe_allow_html=True)
+                            current_value = last_id  # Perbarui current_value dengan nilai yang baru
+
+
                 stframe.image(im0, channels="BGR", use_column_width=True)
-                tetesan.markdown(f"<h3> {str(len(data_tetesan))} </h3>", unsafe_allow_html=True)
+                # if unique_ids_str is not None:
+                #     tetesan.markdown(f"<h3> {unique_ids_str} </h3>", unsafe_allow_html=True)
                 timer.write(f"<h3> {detection_time:.2f} </h3>", unsafe_allow_html=True)
                 fps_rate.markdown(f"<h3> {fps_} </h3>", unsafe_allow_html=True)
     # Print results
@@ -296,9 +319,9 @@ def parse_opt():
     parser.add_argument('--deep_sort_model', type=str, default='osnet_x0_25')
     parser.add_argument('--source', type=str, default='videos/motor.mp4', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
-    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[480], help='inference size h,w')
-    parser.add_argument('--conf-thres', type=float, default=0.5, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.5, help='IOU threshold for NMS')
+    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640,640], help='inference size h,w')
+    parser.add_argument('--conf-thres', type=float, default=0.4, help='object confidence threshold')
+    parser.add_argument('--iou-thres', type=float, default=0.4, help='IOU threshold for NMS')
     parser.add_argument('--fourcc', type=str, default='mp4v', help='output video codec (verify ffmpeg support)')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--show-vid', action='store_false', help='display tracking video results')

@@ -15,11 +15,12 @@ if __name__ == '__main__':
     page_bg_img = """
     <style>
     [data-testid="stAppViewContainer"]{
-        background-image: url("https://img.freepik.com/free-vector/abstract-technological-background_23-2148897676.jpg?w=740&t=st=1693229669~exp=1693230269~hmac=4473cdc9c276b81cc671a7ac1cdcdc95ccb609dc3556567f5c23c63a245a2f7b");
+        background-color: #000000;
+        background-image: url(https://unsplash.com/photos/zbpgmGe27p8);
         background-size: cover;
     }
     [data-testid="stSidebar"]{
-        background-image: url("https://img.freepik.com/free-vector/gradient-network-connection-background_23-2148865392.jpg?w=740&t=st=1693229884~exp=1693230484~hmac=3e180effa56e57dc994bfbf25955eb77eb449de993ac017b44e05d6d1e759bf8");
+        background-image: assets/abstract-technological-background_23-2148897676.jpg;
         background-size: cover;
     }
     </style>
